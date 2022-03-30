@@ -1,5 +1,7 @@
 # qkernel
+Reproduction of [Machine learning of high dimensional data on a noisy quantum processor](https://arxiv.org/abs/2101.09581).
 
+## Run
 ```shell
 python main.py --n_qubits=5 --n_samples=1000 --qgamma=0.1 --pq=0.1 --rgamma=0.012 --cv=4
 ```
