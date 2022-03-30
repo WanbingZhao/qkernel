@@ -3,7 +3,7 @@ Reproduction of [Machine learning of high dimensional data on a noisy quantum pr
 
 ## Run
 ```shell
-python main.py --n_qubits=5 --n_samples=1000 --qgamma=0.1 --pq=0.1 --rgamma=0.012 --cv=4
+python main.py --n_qubits=5 --n_samples=1000 --qgamma=0.1 --qp=0.1 --rgamma=0.012 --cv=4
 ```
 
 ## Discrepancy & Question
