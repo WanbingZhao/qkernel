@@ -2,6 +2,11 @@ import pickle
 from tqdm import tqdm
 from urllib import request
 
+import numpy as np
+import matplotlib.pyplot as plt
+
+from const import figdir
+
 def save_variable(v, filename):
   f = open(filename,'wb')
   pickle.dump(v, f)
@@ -47,11 +52,11 @@ def print_search_results(clf):
         print("train accuracy: %0.3f (+/-%0.03f), validation accuracy: %0.3f (+/-%0.03f) for %r" 
         % (mean_train, std_train * 2, mean_test, std_test * 2, params))
 
-def plot_search_results(grid,p):
+def plot_search_results(grid, par, fig_name):
     """
     Params: 
         grid: A trained GridSearchCV object.
-        p: The hyparameter
+        p: The hyperparameter
     """
     # Results from grid search
     results = grid.cv_results_
@@ -61,26 +66,28 @@ def plot_search_results(grid,p):
     stds_test = results['std_test_score']
 
     # convert param_grid from dictionary list to dictionary
-    params=grid.param_grid[0]
+    params = grid.param_grid[0]
 
     # Ploting results
-    x = np.array(params[p])
+    x = np.array(params[par])
     fig, ax = plt.subplots(figsize=(5, 2.7)) 
     ax.plot(x, means_train, '-', label='Train')  
     ax.plot(x, means_test, '-', label='Validation') 
     ax.fill_between(x, means_train - stds_train, means_train + stds_train, alpha=0.2)
     ax.fill_between(x, means_test - stds_test, means_test + stds_test, alpha=0.2)
-    ax.set_xlabel(p)  
+    ax.set_xlabel(par)
     ax.set_ylabel('Accuracy')
     # ax.set_xscale('log')  
     ax.legend()
 
-def print_test_results(clf):
-    print("Detailed classification report:")
-    print()
-    print("The model is trained on the size-210 train set.")
-    print("The scores are computed on the size-70 test set.")
-    print()
-    y_true, y_pred = y_test, clf.predict(X_test)
-    print(classification_report(y_true, y_pred))
-    print()
+    plt.savefig(f'{figdir}/{fig_name}.png')
+
+# def print_test_results(clf):
+#     print("Detailed classification report:")
+#     print()
+#     print("The model is trained on the size-210 train set.")
+#     print("The scores are computed on the size-70 test set.")
+#     print()
+#     y_true, y_pred = y_test, clf.predict(X_test)
+#     print(classification_report(y_true, y_pred))
+#     print()
