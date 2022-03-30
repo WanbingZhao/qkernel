@@ -172,14 +172,14 @@ python main.py --n_qubits=5 --n_samples=1000 --qgamma=0.1 --qp=0.1 --rgamma=0.01
 
     Omit imaginary part?
 - Logscale
-```python
-logscale_features = ['min_flux', 'max_flux', 'mean_flux', 'med_flux', 'std_flux', 'skew_flux',\
-                    'min_flux_err', 'max_flux_err', 'mean_flux_err', 'med_flux_err', 'std_flux_err',\
-                    'skew_flux_err', 'sum_flux_err_ratio', 'skew_flux_err_ratio', 'sum_flux_err2',\
-                    'skew_flux_err2', 'hostgal_specz', 'hostgal_photoz', 'hostgal_photoz_err']
-```
+  ```python
+  logscale_features = ['min_flux', 'max_flux', 'mean_flux', 'med_flux', 'std_flux', 'skew_flux',\
+                      'min_flux_err', 'max_flux_err', 'mean_flux_err', 'med_flux_err', 'std_flux_err',\
+                      'skew_flux_err', 'sum_flux_err_ratio', 'skew_flux_err_ratio', 'sum_flux_err2',\
+                      'skew_flux_err2', 'hostgal_specz', 'hostgal_photoz', 'hostgal_photoz_err']
+  ```
 - Robust scaler
 
-    transformation in paper:
+    Transformation in paper:
  $$x_k'=\pi (\frac{x_k-P_1}{P_{99}-P_1})-\frac{\pi}{2}$$
-     different from [sklearn.preprocessing.RobustScaler](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.RobustScaler.html)
+     is different from [sklearn.preprocessing.RobustScaler](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.RobustScaler.html).
