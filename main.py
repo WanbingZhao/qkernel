@@ -51,7 +51,7 @@ if not os.path.exists(feature_file):
 t = time()
 
 # Load n_samples data randomly
-feature = np.load(feature_file, allow_pickle=True)
+feature = np.load(feature_file, allow_pickle=True).astype(np.float64)
 X_y = shuffle(feature, random_state=0, n_samples=args.n_samples)
 X, y = np.split(X_y, [-1], 1)
 y = np.squeeze(y)
@@ -84,10 +84,12 @@ if args.run in ['dataset_size', 'data280', 'tune_Cnl', 'tune_Chw', 'NLvsHW']:
         sys.exit('Tune c1 first.')
 
 # Compute n_samples by n_samples kernel
-if args.run in ['dataset_size', 'data280']:
+if args.run in ['all', 'dataset_size', 'data280']:
 
+    print(f'Computing {args.n_samples} by {args.n_samples} kernel...')
     qk = QKernel(args.n_qubits, c1_opt, noise_free=True)
     kernel = qk.q_kernel_matrix(X, X)
+    print(kernel)
 
 
 ############################
@@ -108,8 +110,8 @@ if args.run in ['all','dataset_size']:
     rstd_test_scores = []
 
     for ds_size in downsample_sizes:
-        qmean_train_score, qstd_train_score, qmean_test_score, qstd_test_score = 0
-        rmean_train_score, rstd_train_score, rmean_test_score, rstd_test_score = 0
+        qmean_train_score, qstd_train_score, qmean_test_score, qstd_test_score = [0] * 4
+        rmean_train_score, rstd_train_score, rmean_test_score, rstd_test_score = [0] * 4
 
         n_trial = 10
         for _ in range(n_trial):
@@ -198,14 +200,14 @@ if args.run in ['all', 'data280']:
 # Load data280 and kernel280
 if args.run in ['tune_Cnl', 'tune_Chw']:
     if os.path.exists(data280_file):
-        data280 = np.load(data280_file)
+        data280 = np.load(data280_file, allow_pickle=True).astype(np.float64)
         X280, y280 = np.split(data280, [-1], 1)
         y280 = np.squeeze(y280)
     else:
         sys.exit('Data280 is required.')
 if args.run == 'tune_Cnl':
     if os.path.exists(kernel280_file):
-        kernel280 = np.load(kernel280_file)
+        kernel280 = np.load(kernel280_file, allow_pickle=True).astype(np.float64)
     else:
         sys.exit('Kernel280 is required.')
 

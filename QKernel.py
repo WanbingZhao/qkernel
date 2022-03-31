@@ -148,6 +148,9 @@ class QKernel:
 
         return mat
 
+        # return np.array([[self.q_kernel_estimator(x1, x2) for x2 in X2] for x1 in X1])
+
+
     def worker(self, pos):
         i, j = pos
         if self.train and i >= j:
@@ -156,10 +159,3 @@ class QKernel:
             val = self.q_kernel_estimator(self.X1[i, :], self.X2[j, :])
         return float(val.numpy())
 
-
-        # if (X1 == X2).all():
-        #     # kernel for train, estimate m(m-1)/2 times, return m*m matrix
-        #     return np.array([[self.q_kernel_estimator(x1, x2) for x2 in X2] for x1 in X1])
-        # else:
-        #     # kernel for test, estimate m*v times, return v*m matrix(before support vector selection)
-        #     return np.array([[self.q_kernel_estimator(x1, x2) for x2 in X2] for x1 in X1])
