@@ -1,6 +1,6 @@
 # Set environment
 import os
-os.system('pip install -r requirements.txt')
+# os.system('pip install -r requirements.txt')
 
 # Import library
 import sys
@@ -14,7 +14,7 @@ from sklearn.utils import shuffle
 import paddle
 import matplotlib.pyplot as plt
 
-from const import feature_file, label_file, c1_opt_file, Cnl_opt_file,\
+from const import feature_file, c1_opt_file, Cnl_opt_file,\
     data280_file, kernel280_file, datadir, qubit_list, figdir
 from train import train
 from utils import save_variable, load_variable, print_search_results, plot_search_results
@@ -42,7 +42,7 @@ if not os.path.exists(figdir):
     os.mkdir(figdir)
 
 # Build dataset
-if not (os.path.exists(feature_file) & os.path.exists(label_file)):
+if not os.path.exists(feature_file):
     # Preprocess
     os.system('python preprocess.py')
   

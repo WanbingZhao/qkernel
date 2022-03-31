@@ -28,7 +28,7 @@ class Q_Kernel(BaseEstimator,TransformerMixin):
         return self
 
 
-def train(svm, train_data=0, n_qubit=7, noise_free = True, qgamma=0.1, qp=0.1,\
+def train(svm, train_data=0, n_qubits=7, noise_free = True, qgamma=0.1, qp=0.1,\
         cv=4, C=[1], c1=[1], rgamma=[0.012]):
 
     if svm == 'qdata':
@@ -42,7 +42,7 @@ def train(svm, train_data=0, n_qubit=7, noise_free = True, qgamma=0.1, qp=0.1,\
         # using the 'estimator__param' syntax.
         param_grid = dict([
             ('qk__c1', c1),
-            ('qk__n_qubit', [n_qubit]),
+            ('qk__n_qubit', [n_qubits]),
             ('qk__noise_free', [noise_free]),
             ('qk__gamma', [qgamma]),
             ('qk__p', [qp]),

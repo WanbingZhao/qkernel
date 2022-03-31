@@ -7,7 +7,6 @@ curve_file_2 = f'{datadir}/training_set_42_90.csv'
 
 orig_feature_file = f'{datadir}/plasticc_feature.csv'
 feature_file = f'{datadir}/plasticc_feature.npy'
-label_file = f'{datadir}/plasticc_label.npy'
 
 LOG_FEATS = ['min_flux', 'max_flux', 'mean_flux', 'med_flux', 'std_flux', 'skew_flux',\
             'min_flux_err', 'max_flux_err', 'mean_flux_err', 'med_flux_err', 'std_flux_err',\
@@ -21,5 +20,18 @@ kernel280_file = f'{datadir}/kernel280.npy'
 
 qubit_list = [5, 7, 10]
 
-curve_url = 'https://storage.googleapis.com/kaggle-competitions-data/kaggle-v2/10384/120379/compressed/training_set.csv.zip?GoogleAccessId=web-data@kaggle-161607.iam.gserviceaccount.com&Expires=1648717257&Signature=i%2BjTWlsttVzLFJk4pvrqlPyL7PVtb1vbE3mhFJrKplHDel6qLKfEgnYRt6vOxL%2BbVCeyflaMKcnVS2Ri9Pr5UMbJdABCHR%2B8ng1P3vPbYLBrVxl%2FvLqGnDG%2FxdovMGDtZCMY3VV6PQ4WqLSmEGJKCTmPW%2Byb71EvmQvMNDSPNlevjWcnbpc0g7qqkRwNuvlC7Woz0uyhixrHGJSJo0q1gpI0RUsTI2k8R7b5C7HljcTbIxJh4fauIVFJIXgSai7NXjjynZZJ6146PTvpc6IkyhILQBWD%2FOC06K70Im7TJK2jsDPiREHwC3FB1Y%2BRwjve%2ByT9DE6yX4%2F%2B4iEqCyifwg%3D%3D&response-content-disposition=attachment%3B+filename%3Dtraining_set.csv.zip'
-meta_url = 'https://storage.googleapis.com/kagglesdsdata/competitions/10384/120379/training_set_metadata.csv?GoogleAccessId=web-data@kaggle-161607.iam.gserviceaccount.com&Expires=1648717315&Signature=mTfMJnh11RplubEL3duX8G9P8BEcgMRRiKbT%2FVh3lluDbLrFgUNEt976uDrPnUyxSj0%2FOemLSPCtnUxO7uaIcqrVRScPQyzhxCLJZ41i9OhVuS%2FlyoLXJkBu%2FNjmGDobBzLpbdBlfVJ29c0AP0hVTl%2BK5AptXlrQk%2BhvIHpnTL28mBmLwpp%2Ftt70cIptaUVZL6Jqv4gbBJuZjvFW0KxNH8HkMiHwGeWAFx%2FT%2FUaXYlnODBrKhJRUfzLttsLh6%2FgTvffhFb1%2BuaT6uAx%2BSSii2CazpzaM50zHo%2BaOqEeQvSZ6b3TEqbmkYDvlk39JT8X7ekJNuG2Rt0nisq430L91tA%3D%3D&response-content-disposition=attachment%3B+filename%3Dtraining_set_metadata.csv'
+curve_url = 'https://storage.googleapis.com/kaggle-competitions-data/kaggle-v2/10384/120379/' \
+            'compressed/training_set.csv.zip?GoogleAccessId=web-data@kaggle-161607.iam.' \
+            'gserviceaccount.com&Expires=1649002492&Signature=Xuh8Ur%' \
+            '2FGyOpVt214ReYp4lwaC2%2F2N9bRByunllQ2sFvBbxI5KorklHJK2hpmREG%2FPbWfMC8nvI94e3pR0uWHCEx20IUL%' \
+            '2Bg30flUOii80Ar08RqYi0LInobNHs%2FyJujpRpMa7owi0gaOv%2BJhuIG8iJfa3tjpW1lszcwR72fJp%2BRXwk1oa67o' \
+            'TWEKMV1zfmLUt9VtSXgWuFMdHsOaW4i96%2FgZejHlWNq0wiIV2z3H6%2FpjxI68Opquge2qcw9fvbhT3ciwHDFU8fUpl82' \
+            'AU8U%2BCGjijsOhsOO4MDN7rXxk8c7Y5Mbtm3c7utOb9L%2Fcx4tVVKGNRYrj1owRmiYb4vH%2BVaQ%3D%3D&' \
+            'response-content-disposition=attachment%3B+filename%3Dtraining_set.csv.zip'
+meta_url = 'https://storage.googleapis.com/kagglesdsdata/competitions/10384/120379/training_set_metadata.' \
+           'csv?GoogleAccessId=web-data@kaggle-161607.iam.gserviceaccount.com&Expires=1649002498&Signature=' \
+           'UvmuUhxIDuQbk3Cd4G0yGvan3GYODqRCLQvGkGuBkSDrqMtU3yB5Bfvrn%2B2KOxhUacIrVz4LzCXVsMwJDterD3MDte0ow' \
+           'bZQQAPjXFEbtVK1fGRmI%2FE3IPdFGoAZsn6hAFLZmtVyJ0MkDqLtDzpDFSQhlIrycbKZCCzCH1Q1yyCFtVxSwC4cW5pE0Ud' \
+           'HtmdFmH49D3QGMd2LvQl8uL2XTtsT0O%2BKrlrYxnxzjBNrfFHSVYo1FgJTKn%2FDUMWOCff6Sw0LG90Upyf0gJpVHhu9tfs' \
+           'GpHpgUpk7JASi5zT2jQA%2Fv7vFv8UcokXxWZ5wCfCVjffeOTyGEWh20O9S4oj6IQ%3D%3D&response-content-disposition' \
+           '=attachment%3B+filename%3Dtraining_set_metadata.csv'
