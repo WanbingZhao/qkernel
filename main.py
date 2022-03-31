@@ -9,7 +9,7 @@ from time import time
 from random import sample
 
 import numpy as np
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, KFold
 from sklearn.utils import shuffle
 import paddle
 import matplotlib.pyplot as plt
@@ -37,9 +37,9 @@ parser.add_argument('--cv', type=int, default=4, help='folds for cross validatio
 args = parser.parse_args()
 
 if not os.path.exists(datadir):
-    os.system(f'mkdir {datadir}')
+    os.mkdir(datadir)
 if not os.path.exists(figdir):
-    os.system(f'mkdir {figdir}')
+    os.mkdir(figdir)
 
 # Build dataset
 if not (os.path.exists(feature_file) & os.path.exists(label_file)):
@@ -53,14 +53,16 @@ t = time()
 # Load n_samples data randomly
 feature = np.load(feature_file, allow_pickle=True)
 X_y = shuffle(feature, random_state=0, n_samples=args.n_samples)
+X, y = np.split(X_y, [-1], 1)
+y = np.squeeze(y)
+
 
 ############################
 # Supplementary Figure 2a: Hyperparameter Tuning c1
 # Tune c1 with args.n_sample training data
 
 if args.run in ['all','tune_c1']:
-    X, y = np.split(X_y, [-1], 1)
-    data = (X, np.squeeze(y))
+    data = (X, y)
     c1_range = np.linspace(0, 1, 20)
     qsvm_c1 = train('qdata', data, n_qubits=args.n_qubits, cv=4, c1=c1_range)
     c1_opt = qsvm_c1.best_params_['c1']
@@ -81,16 +83,17 @@ if args.run in ['dataset_size', 'data280', 'tune_Cnl', 'tune_Chw', 'NLvsHW']:
     else:
         sys.exit('Tune c1 first.')
 
+# Compute n_samples by n_samples kernel
+if args.run in ['dataset_size', 'data280']:
+
+    qk = QKernel(args.n_qubits, c1_opt, noise_free=True)
+    kernel = qk.q_kernel_matrix(X, X)
+
 
 ############################
 # Figure 3: Learning Curve and Sample Variance
 
 if args.run in ['all','dataset_size']:
-    X, y = np.split(X_y, [-1], 1)
-
-    # Compute n_samples by n_samples kernel
-    qk = QKernel(args.n_qubits, c1_opt, noise_free=True)
-    kernel = qk.q_kernel_matrix(X, X)
 
     downsample_sizes = np.linspace(64, 375, 5).astype(int)
 
@@ -105,15 +108,8 @@ if args.run in ['all','dataset_size']:
     rstd_test_scores = []
 
     for ds_size in downsample_sizes:
-        qmean_train_score = 0
-        qstd_train_score = 0
-        qmean_test_score = 0
-        qstd_test_score = 0
-
-        rmean_train_score = 0
-        rstd_train_score = 0
-        rmean_test_score = 0
-        rstd_test_score = 0
+        qmean_train_score, qstd_train_score, qmean_test_score, qstd_test_score = 0
+        rmean_train_score, rstd_train_score, rmean_test_score, rstd_test_score = 0
 
         n_trial = 10
         for _ in range(n_trial):
@@ -121,10 +117,9 @@ if args.run in ['all','dataset_size']:
             x_indices = np.tile(indices, (2, 1)).T
             y_indices = np.tile(indices, (2, 1))
 
-            X, y = np.split(X_y, [-1], 1)
             kernel_samples = kernel[x_indices, y_indices]
-            y = y[indices]
-            data = (kernel_samples, np.squeeze(y))
+            y_samples = y[indices]
+            data = (kernel_samples, y_samples)
 
             qsvm = train('qkernel', data, n_qubits=args.n_qubits, cv=4, c1=[c1_opt])
             qres = qsvm.cv_results_
@@ -171,7 +166,34 @@ if args.run in ['all','dataset_size']:
 # Build data280
 
 if args.run in ['all', 'data280']:
-    pass
+    n_trial = 10
+    n_splits = 4
+    sample_size = 280
+    indices_list = []
+    acc_val = []
+    for _ in n_trial:
+        indices = sample(range(args.n_samples), sample_size)
+        x_indices = np.tile(indices, (2, 1)).T
+        y_indices = np.tile(indices, (2, 1))
+
+        kernel280 = kernel[indices]
+
+        kf = KFold(n_splits=n_splits, shuffle=True, random_state=0)
+        for train_index, test_index in kf.split(kernel280):
+            indices_list.append((indices, train_index, test_index))
+            kernel_train, kernel_test = kernel280[train_index], kernel280[test_index]
+            y_train, y_test = y[train_index], y[test_index]
+            qsvm280 = train('qkernel', (kernel_train, y_train), n_qubits=args.n_qubits, c1 = c1_opt)
+            y_test_pred = qsvm280.predict(kernel_test)
+            acc_val = acc_val.append(np.array(y_test_pred == y_test, dtype=int).sum() / len(y_test))
+
+    acc_val = np.asarray(acc_val)
+    min_idx = (np.abs(acc_val - np.mean(acc_val))).argmin()
+
+    indices, train_idx, test_idx = indices_list[min_idx]
+    X_y280 = X_y[indices]
+    data280 = np.vstack(X_y280[train_idx], X_y280[test_idx])
+    np.save(data280_file, data280)
 
 # Load data280 and kernel280
 if args.run in ['tune_Cnl', 'tune_Chw']:
@@ -258,8 +280,6 @@ if args.run in ['all', 'NLvsHW']:
             x_indices = np.tile(indices, (2, 1)).T
             y_indices = np.tile(indices, (2, 1))
 
-            X, y = np.split(X_y, [-1], 1)
-            y = np.squeeze(y)
             X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_size, shuffle=False)
 
             kernel_samples = kernel[x_indices, y_indices]
@@ -280,14 +300,12 @@ if args.run in ['all', 'NLvsHW']:
         std_acc_test_nl.append(np.std(test_acc))
 
 
-    x = qubit_list
-
     fig, axs = plt.subplots(1, 2, sharey=True, figsize=(5, 2.7))
-    l1 = axs[0].errorbar(x, mean_acc_train_nl, std_acc_train_nl, marker='o')
-    l2 = axs[0].errorbar(x, mean_acc_train_nl, std_acc_train_nl, marker='s')
+    l1 = axs[0].errorbar(qubit_list, mean_acc_train_nl, std_acc_train_nl, marker='o')
+    l2 = axs[0].errorbar(qubit_list, mean_acc_train_nl, std_acc_train_nl, marker='s')
     axs[0].set_title('Noiseless')
-    l3 = axs[1].errorbar(x, acc_train_hw, 0, marker='o')
-    l4 =  axs[1].errorbar(x, acc_test_hw, 0, marker='s')
+    l3 = axs[1].errorbar(qubit_list, acc_train_hw, 0, marker='o')
+    l4 =  axs[1].errorbar(qubit_list, acc_test_hw, 0, marker='s')
     axs[1].set_title('Experiment')
 
     plt.xlabel("Number of qubits")
@@ -300,5 +318,7 @@ if args.run in ['all', 'NLvsHW']:
     ############### Show elapsed time
     if show_time:
         print('time used: %d s' % (time() - t))
+
+
 
 
