@@ -21,7 +21,7 @@ from train import train
 from utils import save_variable, load_variable, print_search_results, plot_search_results
 from QKernel import QKernel
 
-
+print(paddle.device.get_device())
 paddle.set_device(paddle.device.get_device())
 show_time = True
 
@@ -94,10 +94,8 @@ if args.run in ['all', 'dataset_size', 'data280']:
     if os.path.exists(kernel1k_file):
         kernel = np.load(kernel1k_file, allow_pickle=True).astype(np.float64)
     else:
-        print(f'Computing {args.n_samples} by {args.n_samples} kernel...')
         qk = QKernel(args.n_qubits, c1_opt, noise_free=True)
         kernel = qk.q_kernel_matrix(X, X)
-        print(kernel)
         np.save(kernel1k_file, kernel)
 
 

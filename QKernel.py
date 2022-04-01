@@ -1,7 +1,7 @@
-
+import os
 import math
 from schwimmbad import MultiPool
-from tqdm import tqdm
+from tqdm import tqdm, trange
 
 import numpy as np
 from numpy import pi as PI
@@ -135,14 +135,31 @@ class QKernel:
         self.X1 = X1
         self.X2 = X2
         self.train = (n1 == n2) and (X1 == X2).all()
+        n_total = n1 * n2
 
         xv, yv = np.meshgrid(range(n1), range(n2), indexing='ij')
         pos = list(zip(xv.reshape(-1).tolist(), yv.reshape(-1).tolist()))
 
-        with MultiPool() as pool:
-            results = pool.imap(self.worker, list(pos))
-            mat = np.array(list(results)).reshape(n1, n2)
-        
+        n_iter = 1000
+        n_form = 0
+        form_res = np.array([])
+        tmp_file = 'kernel_tmp.npy'
+        if os.path.exists(tmp_file):
+            form_res = np.load(tmp_file, allow_pickle=True).astype(np.float64)
+            n_form = (form_res.shape[0]) // n_iter
+            form_res = form_res[:n_form * n_iter]
+        for i in trange(int(np.ceil(n_total / n_iter)), desc=f'Computing {n1} by {n2} kernel'):
+            if i >= n_form:
+                with MultiPool() as pool:
+                    if (i + 1) * n_iter <= n_total:
+                        res = pool.imap(self.worker, pos[i * n_iter:(i + 1) * n_iter])
+                    else:
+                        res = pool.imap(self.worker, pos[i * n_iter:n_total])
+                    res = np.array(list(res))
+                    res = np.append(form_res, res)
+                    np.save(tmp_file, res)
+
+        mat = res.reshape(n1, n2)
         if self.train:
             mat = mat + mat.T + np.eye(n1, n2) * self.c1
 
