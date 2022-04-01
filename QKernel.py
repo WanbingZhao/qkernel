@@ -163,6 +163,7 @@ class QKernel:
         if self.train:
             mat = mat + mat.T + np.eye(n1, n2) * self.c1
 
+        os.remove(tmp_file)
         return mat
 
         # return np.array([[self.q_kernel_estimator(x1, x2) for x2 in X2] for x1 in X1])
