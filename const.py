@@ -17,6 +17,8 @@ c1_opt_file = f'{datadir}/c1_opt.txt'
 Cnl_opt_file = f'{datadir}/Cnl_opt.txt'
 data280_file = f'{datadir}/data280.npy'
 kernel280_file = f'{datadir}/kernel280.npy'
+data1k_file = f'{datadir}/data1k.npy'
+kernel1k_file = f'{datadir}/kernel1k.npy'
 
 qubit_list = [5, 7, 10]
 

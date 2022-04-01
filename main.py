@@ -15,7 +15,8 @@ import paddle
 import matplotlib.pyplot as plt
 
 from const import feature_file, c1_opt_file, Cnl_opt_file,\
-    data280_file, kernel280_file, datadir, qubit_list, figdir
+    data280_file, kernel280_file, datadir, qubit_list, figdir,\
+    data1k_file, kernel1k_file
 from train import train
 from utils import save_variable, load_variable, print_search_results, plot_search_results
 from QKernel import QKernel
@@ -50,9 +51,14 @@ if not os.path.exists(feature_file):
 ############### Start timing
 t = time()
 
-# Load n_samples data randomly
-feature = np.load(feature_file, allow_pickle=True).astype(np.float64)
-X_y = shuffle(feature, random_state=0, n_samples=args.n_samples)
+if os.path.exists(data1k_file):
+    X_y = np.load(data1k_file, allow_pickle=True).astype(np.float64)
+else:
+    # Sample n_samples data
+    feature = np.load(feature_file, allow_pickle=True).astype(np.float64)
+    X_y = shuffle(feature, random_state=0, n_samples=args.n_samples)
+    np.save(data1k_file, X_y)
+
 X, y = np.split(X_y, [-1], 1)
 y = np.squeeze(y)
 
@@ -85,11 +91,14 @@ if args.run in ['dataset_size', 'data280', 'tune_Cnl', 'tune_Chw', 'NLvsHW']:
 
 # Compute n_samples by n_samples kernel
 if args.run in ['all', 'dataset_size', 'data280']:
-
-    print(f'Computing {args.n_samples} by {args.n_samples} kernel...')
-    qk = QKernel(args.n_qubits, c1_opt, noise_free=True)
-    kernel = qk.q_kernel_matrix(X, X)
-    print(kernel)
+    if os.path.exists(kernel1k_file):
+        kernel = np.load(kernel1k_file, allow_pickle=True).astype(np.float64)
+    else:
+        print(f'Computing {args.n_samples} by {args.n_samples} kernel...')
+        qk = QKernel(args.n_qubits, c1_opt, noise_free=True)
+        kernel = qk.q_kernel_matrix(X, X)
+        print(kernel)
+        np.save(kernel1k_file, kernel)
 
 
 ############################
