@@ -110,6 +110,7 @@ if args.run in ['all','dataset_size']:
     rstd_test_scores = []
 
     for ds_size in downsample_sizes:
+        print(f'Training on {ds_size} data')
         qmean_train_score, qstd_train_score, qmean_test_score, qstd_test_score = [0] * 4
         rmean_train_score, rstd_train_score, rmean_test_score, rstd_test_score = [0] * 4
 
@@ -120,17 +121,16 @@ if args.run in ['all','dataset_size']:
             y_indices = np.tile(indices, (2, 1))
 
             kernel_samples = kernel[x_indices, y_indices]
-            y_samples = y[indices]
-            data = (kernel_samples, y_samples)
+            X_samples, y_samples = X[indices], y[indices]
 
-            qsvm = train('qkernel', data, n_qubits=args.n_qubits, cv=4, c1=[c1_opt])
+            qsvm = train('qkernel', (kernel_samples, y_samples), n_qubits=args.n_qubits, cv=4, c1=[c1_opt])
             qres = qsvm.cv_results_
             qmean_train_score += qres['mean_train_score']
             qstd_train_score += qres['std_train_score']
             qmean_test_score += qres['mean_test_score']
             qstd_test_score += qres['std_test_score']
 
-            rsvm = train('rbf', data, cv=4)
+            rsvm = train('rbf', (X_samples, y_samples), cv=4)
             rres = rsvm.cv_results_
             rmean_train_score += rres['mean_train_score']
             rstd_train_score += rres['std_train_score']
