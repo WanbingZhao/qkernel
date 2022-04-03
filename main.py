@@ -311,7 +311,7 @@ if args.run in ['all', 'NLvsHW']:
 
     fig, axs = plt.subplots(1, 2, sharey=True, figsize=(5, 2.7))
     l1 = axs[0].errorbar(qubit_list, mean_acc_train_nl, std_acc_train_nl, marker='o')
-    l2 = axs[0].errorbar(qubit_list, mean_acc_train_nl, std_acc_train_nl, marker='s')
+    l2 = axs[0].errorbar(qubit_list, mean_acc_test_nl, std_acc_test_nl, marker='s')
     axs[0].set_title('Noiseless')
     l3 = axs[1].errorbar(qubit_list, acc_train_hw, 0, marker='o')
     l4 =  axs[1].errorbar(qubit_list, acc_test_hw, 0, marker='s')
