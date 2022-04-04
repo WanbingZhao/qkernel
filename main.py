@@ -41,11 +41,6 @@ if not os.path.exists(datadir):
     os.mkdir(datadir)
 if not os.path.exists(figdir):
     os.mkdir(figdir)
-
-# Build dataset
-if not os.path.exists(feature_file):
-    # Preprocess
-    os.system('python preprocess.py')
   
 
 ############### Start timing
@@ -54,6 +49,10 @@ t = time()
 if os.path.exists(data1k_file):
     X_y = np.load(data1k_file, allow_pickle=True).astype(np.float64)
 else:
+    # Build dataset
+    if not os.path.exists(feature_file):
+        # Preprocess
+        os.system('python preprocess.py')
     # Sample n_samples data
     feature = np.load(feature_file, allow_pickle=True).astype(np.float64)
     X_y = shuffle(feature, random_state=0, n_samples=args.n_samples)
@@ -104,7 +103,8 @@ if args.run in ['all', 'dataset_size', 'data280']:
 
 if args.run in ['all','dataset_size']:
 
-    downsample_sizes = np.linspace(64, 375, 5).astype(int)
+    n_folds = 4
+    downsample_sizes = np.linspace(64, 1000, 15).astype(int)
 
     qmean_train_scores = []
     qstd_train_scores = []
@@ -124,8 +124,8 @@ if args.run in ['all','dataset_size']:
         n_trial = 10
         for _ in range(n_trial):
             indices = sample(range(args.n_samples), ds_size)
-            x_indices = np.tile(indices, (2, 1)).T
-            y_indices = np.tile(indices, (2, 1))
+            x_indices = np.tile(indices, (ds_size, 1)).T
+            y_indices = np.tile(indices, (ds_size, 1))
 
             kernel_samples = kernel[x_indices, y_indices]
             X_samples, y_samples = X[indices], y[indices]
@@ -144,16 +144,17 @@ if args.run in ['all','dataset_size']:
             rmean_test_score += rres['mean_test_score']
             rstd_test_score += rres['std_test_score']
 
-        qmean_train_scores.append(qmean_train_score / n_trial)
-        qstd_train_scores.append(qstd_train_score / n_trial)
-        qmean_test_scores.append(qmean_test_score / n_trial)
-        qstd_test_scores.append(qstd_test_score / n_trial)
-        rmean_train_scores.append(rmean_train_score / n_trial)
-        rstd_train_scores.append(rstd_train_score / n_trial)
-        rmean_test_scores.append(rmean_test_score / n_trial)
-        rstd_test_scores.append(rstd_test_score / n_trial)
+        qmean_train_scores.append(float(qmean_train_score / n_trial))
+        qstd_train_scores.append(float(qstd_train_score / n_trial))
+        qmean_test_scores.append(float(qmean_test_score / n_trial))
+        qstd_test_scores.append(float(qstd_test_score / n_trial))
+        rmean_train_scores.append(float(rmean_train_score / n_trial))
+        rstd_train_scores.append(float(rstd_train_score / n_trial))
+        rmean_test_scores.append(float(rmean_test_score / n_trial))
+        rstd_test_scores.append(float(rstd_test_score / n_trial))
 
     fig = plt.figure()
+    downsample_sizes = downsample_sizes * (1 - 1 / n_folds)
     plt.errorbar(downsample_sizes, qmean_train_scores, rstd_train_scores, linestyle='-', marker='o',\
                 label='Noiseless train')
     plt.errorbar(downsample_sizes, qmean_test_scores, rstd_test_scores, linestyle='-', marker='o',\
@@ -182,8 +183,8 @@ if args.run in ['all', 'data280']:
     acc_val = []
     for _ in n_trial:
         indices = sample(range(args.n_samples), sample_size)
-        x_indices = np.tile(indices, (2, 1)).T
-        y_indices = np.tile(indices, (2, 1))
+        x_indices = np.tile(indices, (sample_size, 1)).T
+        y_indices = np.tile(indices, (sample_size, 1))
 
         kernel280 = kernel[indices]
 
@@ -286,8 +287,8 @@ if args.run in ['all', 'NLvsHW']:
             train_size = 210
 
             indices = sample(range(args.n_samples), sample_size)
-            x_indices = np.tile(indices, (2, 1)).T
-            y_indices = np.tile(indices, (2, 1))
+            x_indices = np.tile(indices, (sample_size, 1)).T
+            y_indices = np.tile(indices, (sample_size, 1))
 
             X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_size, shuffle=False)
 

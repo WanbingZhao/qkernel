@@ -62,7 +62,7 @@ def train(svm, train_data=0, n_qubits=7, noise_free = True, qgamma=0.1, qp=0.1,\
         svm.fit(X_train, y_train)
 
     elif svm == 'qkernel':
-        param_grid = dict(kernel='precomputed', C=C)
+        param_grid = dict(kernel=['precomputed'], C=C)
         svm = GridSearchCV(SVC(), param_grid, cv=cv, verbose=3, n_jobs=-1, return_train_score=True)
         kernel, y_train = train_data
         svm.fit(kernel, y_train)
