@@ -8,7 +8,8 @@ python main.py [-h] [--run RUN] [--n_qubits N_QUBITS] [--n_samples N_SAMPLES] [-
 ```
 `--run all` to run all experiments. The program will go through the following steps：
 
-1. Download PLAsTiCC data if no data available. The preset data urls may expire. Find data in [kaggle](https://www.kaggle.com/competitions/PLAsTiCC-2018/data?select=training_set.csv).
+1. Download PLAsTiCC data if no data available.
+    > The preset data urls may expire. Find data in [kaggle](https://www.kaggle.com/competitions/PLAsTiCC-2018/data?select=training_set.csv).
 2. Run process.py if no processed feature data to use.
 3. Sample data with size `n_samples N_SAMPLES`. The sampled data will be saved automatically and used in the following experiments. 
     > NOTE: Sampled will be used in every run. Delete /data/data1k if you want to use different set.
