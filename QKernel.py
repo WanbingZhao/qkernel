@@ -165,7 +165,7 @@ class QKernel:
 
         mat = res.reshape(n1, n2)
         if self.train:
-            mat = mat + mat.T + np.eye(n1, n2) * self.c1
+            mat = mat + mat.T + np.eye(n1, n2)
 
         os.remove(tmp_file)
         return mat
