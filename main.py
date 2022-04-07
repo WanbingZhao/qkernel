@@ -296,7 +296,7 @@ if args.run in ['all', 'NLvsHW']:
             train_kernel = kernel_samples[:train_size, :train_size]
 
             data = (train_kernel, np.squeeze(y))
-            qsvm_Cnl = train('qkernel', data, c1=c1_opt, C=Cnl_opt)
+            qsvm_Cnl = train('qdata', data, c1=c1_opt, C=Cnl_opt)
 
             y_train_pred = qsvm_Cnl.predict(X_train)
             y_test_pred = qsvm_Cnl.predict(X_test)
