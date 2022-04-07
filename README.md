@@ -3,8 +3,39 @@ Reproduction of [Machine learning of high dimensional data on a noisy quantum pr
 
 ## Run
 ```shell
-python main.py --n_qubits=5 --n_samples=1000 --qgamma=0.1 --qp=0.1 --rgamma=0.012 --cv=4
+python main.py [-h] [--run RUN] [--n_qubits N_QUBITS] [--n_samples N_SAMPLES] [--qgamma QGAMMA] [--qp QP] 
+               [--rgamma RGAMMA] [--cv CV]
 ```
+`--run all` to run all experiments. The program will go through the following steps：
+
+1. Download PLAsTiCC data if no data available. The preset data urls may expire. Find data in [kaggle](https://www.kaggle.com/competitions/PLAsTiCC-2018/data?select=training_set.csv).
+2. Run process.py if no processed feature data to use.
+3. Sample data with size `n_samples N_SAMPLES`. The sampled data will be saved automatically and used in the following experiments. 
+    > NOTE: Sampled will be used in every run. Delete /data/data1k if you want to use different set.
+4. **Tune c1**: `--run tune_c1`
+
+    Reproduce Supplementary Figure 2a: Hyperparameter Tuning c1. 
+5. **Explore dataset size**: `--run dataset_size`
+
+    Reproduce Figure 3: Learning Curve and Sample Variance. 
+6. **Build data280**: `--run data280`
+
+    Select 280 data and compute kernel on these data.
+7. **Tune C<sub>noiseless</sub>**: `--run tune_Cnl`
+
+    Reproduce Supplementary Figure 2b: Hyperparameter Tuning C on noiseless circuit. 
+8. **Tune C<sub>hardware</sub>**: `--run tune_Chw`
+
+    Reproduce Supplementary Figure 8: Hyperparameter Tuning C on hardware with noise. 
+9. **Noiseless vs. Experimental Results**: `--run NLvsHW`
+
+    Reproduce Supplementary Figure 4c: Noiseless vs. Experimental Results. 
+
+## Env
+```shell
+pip install -r requirements.txt
+```
+Only test on cpu with Schwimmbad library to accelerate processing and computing, not sure whether it will conflict with paddlepaddle-gpu.
 
 ## Discrepancy & Question
 - Number of features
